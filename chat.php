@@ -29,7 +29,7 @@ array_unshift($messages, $system);
 
 $apiKey = getenv('OPENAI_API_KEY');
 if (!$apiKey) {
-  $apiKey = 'sk-proj-...'; // fallback nếu bạn chưa set ENV
+  $apiKey = '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'; // fallback nếu bạn chưa set ENV
 }
 
 $model = 'gpt-3.5-turbo';
