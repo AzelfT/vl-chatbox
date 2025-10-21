@@ -1,20 +1,23 @@
 <?php
-header('Access-Control-Allow-Origin: https://tenmien.infinityfreeapp.com'); // thay domain của bạn
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
-header('Access-Control-Allow-Methods: POST, OPTIONS');
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(204); exit; }
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+  http_response_code(204);
+  exit;
+}
 
 header('Content-Type: application/json; charset=utf-8');
 
+// ====== NHẬN DỮ LIỆU TỪ FRONTEND ======
 $raw = file_get_contents('php://input');
 $input = json_decode($raw ?: '[]', true);
 $messages = isset($input['messages']) && is_array($input['messages']) ? $input['messages'] : [];
 
-// fallback nếu chỉ có "message"
+// Fallback nếu chỉ có "message"
 if (empty($messages) && isset($input['message'])) {
   $messages = [['role' => 'user', 'content' => $input['message']]];
 }
 
+// ====== THÔNG ĐIỆP HỆ THỐNG (SYSTEM PROMPT) ======
 $system = [
   'role' => 'system',
   'content' => "Bạn là trợ lý AI cho showroom ô tô VL AutoGallery. 
@@ -22,17 +25,25 @@ $system = [
   Không tư vấn y khoa. Ngôn ngữ: tiếng Việt."
 ];
 
+// Nếu chưa có message, tạo mặc định
 if (empty($messages)) {
   $messages = [['role' => 'user', 'content' => 'Xin chào!']];
 }
 array_unshift($messages, $system);
 
-$apiKey = getenv("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");
+// ====== LẤY API KEY TỪ BIẾN MÔI TRƯỜNG ======
+$apiKey = getenv("OPENAI_API_KEY");
+
+// Nếu server chưa có biến môi trường
 if (!$apiKey) {
-  $apiKey = "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"; // fallback nếu bạn chưa set ENV
+  echo json_encode([
+    'reply' => '⚠️ Biến môi trường OPENAI_API_KEY chưa được thiết lập trên server Railway.'
+  ], JSON_UNESCAPED_UNICODE);
+  exit;
 }
 
-$model = 'gpt-3.5-turbo';
+// ====== GỌI API OPENAI ======
+$model = 'gpt-4o-mini';
 
 try {
   $payload = json_encode([
@@ -81,5 +92,7 @@ try {
   echo json_encode(['reply' => $reply], JSON_UNESCAPED_UNICODE);
 
 } catch (Throwable $e) {
-  echo json_encode(['reply' => 'Lỗi server: '.$e->getMessage()], JSON_UNESCAPED_UNICODE);
+  echo json_encode([
+    'reply' => 'Lỗi server: ' . $e->getMessage()
+  ], JSON_UNESCAPED_UNICODE);
 }
