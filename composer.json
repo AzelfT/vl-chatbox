@@ -1,0 +1,8 @@
+{
+  "name": "vl-autogallery/chatbot",
+  "description": "AI Chatbot using OpenAI for VL AutoGallery",
+  "require": {},
+  "scripts": {
+    "start": "php -S 0.0.0.0:$PORT"
+  }
+}
