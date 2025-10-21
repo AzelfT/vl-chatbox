@@ -30,10 +30,10 @@ array_unshift($messages, $system);
 
 // ======= Gọi OpenAI (Chat Completions) =======
 // Khuyến nghị: để API key trong biến môi trường OPENAI_API_KEY
-$apiKey = getenv('OPENAI_API_KEY');
+$apiKey = getenv('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');
 if (!$apiKey) {
   // TẠM: fallback key cứng (không khuyến nghị đưa production)
-  $apiKey = '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';
+  $apiKey = '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';
 }
 
 $model  = 'gpt-3.5-turbo'; // đổi model nếu bạn có quyền model khác
